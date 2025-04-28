@@ -10,27 +10,28 @@ plugins {
 
 val commitCount by project.extra {
     try {
-        providers
-            .exec {
-                commandLine("git", "rev-list", "--count", "HEAD")
-            }.standardOutput.asText
-            .get()
-            .trim()
-            .toInt()
+        providers.exec {
+            commandLine("git", "rev-list", "--count", "HEAD")
+        }.standardOutput.asText.get().trim().toInt()
     } catch (e: Exception) {
+        1
+    }
+}
+ catch (e: Exception) {
         1 // fallback falls git nicht verfügbar
     }
 }
 
 val latestTag by project.extra {
     try {
-        providers
-            .exec {
-                commandLine("git", "describe")
-            }.standardOutput.asText
-            .get()
-            .trim()
+        providers.exec {
+            commandLine("git", "describe")
+        }.standardOutput.asText.get().trim()
     } catch (e: Exception) {
+        "v0.0.1"
+    }
+}
+ catch (e: Exception) {
         "v0.0.0" // fallback falls git nicht verfügbar
     }
 }
