@@ -52,7 +52,11 @@ class RssLocalSync(
     private val repository: Repository by instance()
     private val syncClient: SyncRestClient by instance()
     private val feedParser: FeedParser by instance()
-    private val okHttpClient: OkHttpClient by instance()
+private val okHttpClient: OkHttpClient by lazy {
+    OkHttpClient.Builder()
+        .proxy(Proxy(Proxy.Type.SOCKS, InetSocketAddress("127.0.0.1", 9050)))
+        .build()
+}
     private val filePathProvider: FilePathProvider by instance()
     private val application: Application by instance()
 
