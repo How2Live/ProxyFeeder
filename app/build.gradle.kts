@@ -20,6 +20,7 @@ val latestTagProvider = providers.exec {
     output.trim().ifEmpty { "v0.0.0" }
 }
 
+
 android {
     namespace = "com.nononsenseapps.feeder"
     compileSdk = 35
