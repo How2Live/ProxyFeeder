@@ -9,7 +9,7 @@ plugins {
 }
 
 
-// ─── Git‐Versioning, kompatibel mit Gradle-Config-Cache ───
+// ─── Git‐Versioning, kompatibel mit Gradle‐Config‐Cache ───
 val commitCountProvider = providers.exec {
     commandLine("git", "rev-list", "--count", "HEAD")
 }.standardOutput.asText.map { it.trim().toIntOrNull() ?: 1 }
@@ -25,8 +25,8 @@ android {
 
     defaultConfig {
         applicationId = "com.nononsenseapps.feeder"
-        versionCode = commitCountProvider.get()
-        versionName = latestTagProvider.get()
+        versionCode = commitCountProvider.get()       // ← hier Provider nutzen
+        versionName = latestTagProvider.get()         // ← hier Provider nutzen
         minSdk = 23
         targetSdk = 35
 
