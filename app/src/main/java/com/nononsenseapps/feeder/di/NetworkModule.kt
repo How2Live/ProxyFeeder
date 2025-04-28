@@ -1,5 +1,7 @@
 package com.nononsenseapps.feeder.di
 
+import java.net.Proxy
+import java.net.InetSocketAddress
 import com.nononsenseapps.feeder.model.FeedParser
 import com.nononsenseapps.feeder.model.FullTextParser
 import com.nononsenseapps.feeder.model.RssLocalSync
@@ -15,14 +17,23 @@ import org.kodein.di.instance
 import org.kodein.di.provider
 import org.kodein.di.singleton
 
-val networkModule =
-    DI.Module(name = "network") {
-        // Parsers can carry state so safer to use providers
-        bind<JsonAdapter<Feed>>() with provider { feedAdapter() }
-        bind<JsonFeedParser>() with provider { JsonFeedParser(instance<OkHttpClient>(), instance()) }
-        bind<FeedParser>() with provider { FeedParser(di) }
-        // These don't have state issues
-        bind<SyncRestClient>() with singleton { SyncRestClient(di) }
-        bind<RssLocalSync>() with singleton { RssLocalSync(di) }
-        bind<FullTextParser>() with singleton { FullTextParser(di) }
+val networkModule = DI.Module(name = "network") {
+
+    // ─── Globaler OkHttpClient: routet alles über Tor/Orbot (localhost:9050) ───
+    bind<OkHttpClient>() with singleton {
+        OkHttpClient.Builder()
+            .proxy(Proxy(Proxy.Type.SOCKS, InetSocketAddress("127.0.0.1", 9050)))
+            .build()
     }
+    // ───────────────────────────────────────────────────────────────────────────
+
+    // Parser können Zustand halten → provider
+    bind<JsonAdapter<Feed>>() with provider { feedAdapter() }
+    bind<JsonFeedParser>()    with provider { JsonFeedParser(instance(), instance()) }
+    bind<FeedParser>()        with provider { FeedParser(di) }
+
+    // Stateless → singleton
+    bind<SyncRestClient>() with singleton { SyncRestClient(di) }
+    bind<RssLocalSync>()   with singleton { RssLocalSync(di) }
+    bind<FullTextParser>() with singleton { FullTextParser(di) }
+}
