@@ -30,6 +30,14 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
+      - name: Fake Git Info
+        run: |
+          git config --global user.email "you@example.com"
+          git config --global user.name "Your Name"
+          git init
+          git add .
+          git commit -m "fake commit" || true
+
       - name: Build Debug APK
         run: ./gradlew :app:assembleDebug
 
@@ -38,3 +46,4 @@ jobs:
         with:
           name: app-debug.apk
           path: app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 7
