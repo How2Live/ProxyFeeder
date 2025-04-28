@@ -8,33 +8,35 @@ plugins {
     alias(libs.plugins.ktlint.gradle)
 }
 
-val commitCount by project.extra {
+val commitCount by extra {
     try {
-        providers.exec {
-            commandLine("git", "rev-list", "--count", "HEAD")
-        }.standardOutput.asText.get().trim().toInt()
+        "git rev-list --count HEAD".runCommand().trim().toInt()
     } catch (e: Exception) {
-        1
-    }
-}
- catch (e: Exception) {
         1 // fallback falls git nicht verfügbar
     }
 }
 
-val latestTag by project.extra {
+val latestTag by extra {
     try {
-        providers.exec {
-            commandLine("git", "describe")
-        }.standardOutput.asText.get().trim()
+        "git describe".runCommand().trim()
     } catch (e: Exception) {
-        "v0.0.1"
-    }
-}
- catch (e: Exception) {
         "v0.0.0" // fallback falls git nicht verfügbar
     }
 }
+
+fun String.runCommand(): String {
+    return try {
+        ProcessBuilder(*split(" ").toTypedArray())
+            .redirectErrorStream(true)
+            .start()
+            .inputStream
+            .bufferedReader()
+            .readText()
+    } catch (e: Exception) {
+        ""
+    }
+}
+
 
 
 android {
