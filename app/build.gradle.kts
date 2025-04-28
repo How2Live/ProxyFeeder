@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.ktlint.gradle)
 }
 
+// ─── Git-Versioning, kompatibel mit Gradle-Config-Cache ───
 val commitCountProvider = providers.exec {
     commandLine("git", "rev-list", "--count", "HEAD")
 }.standardOutput.asText.map { output ->
@@ -19,7 +20,7 @@ val latestTagProvider = providers.exec {
 }.standardOutput.asText.map { output ->
     output.trim().ifEmpty { "v0.0.0" }
 }
-
+// ──────────────────────────────────────────────────────────
 
 android {
     namespace = "com.nononsenseapps.feeder"
@@ -36,6 +37,8 @@ android {
         androidResources.localeFilters.addAll(getListOfSupportedLocales())
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+
+
 
     ksp {
         arg(RoomSchemaArgProvider(File(projectDir, "schemas")))
