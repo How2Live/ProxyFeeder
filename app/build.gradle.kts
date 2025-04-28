@@ -8,36 +8,17 @@ plugins {
     alias(libs.plugins.ktlint.gradle)
 }
 
-val commitCount by extra {
-    try {
-        "git rev-list --count HEAD".runCommand().trim().toInt()
-    } catch (e: Exception) {
-        1 // fallback falls git nicht verfügbar
-    }
+val commitCountProvider = providers.exec {
+    commandLine("git", "rev-list", "--count", "HEAD")
+}.standardOutput.asText.map { output ->
+    output.trim().toIntOrNull() ?: 1
 }
 
-val latestTag by extra {
-    try {
-        "git describe".runCommand().trim()
-    } catch (e: Exception) {
-        "v0.0.0" // fallback falls git nicht verfügbar
-    }
+val latestTagProvider = providers.exec {
+    commandLine("git", "describe", "--tags")
+}.standardOutput.asText.map { output ->
+    output.trim().ifEmpty { "v0.0.0" }
 }
-
-fun String.runCommand(): String {
-    return try {
-        ProcessBuilder(*split(" ").toTypedArray())
-            .redirectErrorStream(true)
-            .start()
-            .inputStream
-            .bufferedReader()
-            .readText()
-    } catch (e: Exception) {
-        ""
-    }
-}
-
-
 
 android {
     namespace = "com.nononsenseapps.feeder"
@@ -45,18 +26,13 @@ android {
 
     defaultConfig {
         applicationId = "com.nononsenseapps.feeder"
-        // The version fields are set with actual values to support F-Droid
-        // In Play variant, they are overriden and taken from git.
-        versionCode = 3657
-        versionName = "2.11.1"
+        versionCode = commitCountProvider.get()
+        versionName = latestTagProvider.get()
         minSdk = 23
         targetSdk = 35
-
         vectorDrawables.useSupportLibrary = true
 
         androidResources.localeFilters.addAll(getListOfSupportedLocales())
-
-        // For espresso tests
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
