@@ -9,15 +9,28 @@ plugins {
 }
 
 
-// ─── Git‐Versioning, kompatibel mit Gradle‐Config‐Cache ───
-val commitCountProvider = providers.exec {
-    commandLine("git", "rev-list", "--count", "HEAD")
-}.standardOutput.asText.map { it.trim().toIntOrNull() ?: 1 }
+// ─── Versionsinfo ───
+val onCi = System.getenv("CI") != null   // GitHub-Actions?  true / false
 
-val latestTagProvider = providers.exec {
-    commandLine("git", "describe", "--tags")
-}.standardOutput.asText.map { it.trim().ifEmpty { "v0.0.0" } }
-// ──────────────────────────────────────────────────────────
+val commitCountProvider = if (onCi) {
+    // CI: kein Git ⇒ feste 1
+    providers.provider { 1 }
+} else {
+    // Lokal: echte Git-Infos
+    providers.exec {
+        commandLine("git", "rev-list", "--count", "HEAD")
+    }.standardOutput.asText.map { it.trim().toIntOrNull() ?: 1 }
+}
+
+val latestTagProvider = if (onCi) {
+    providers.provider { "v0.0.0" }
+} else {
+    providers.exec {
+        commandLine("git", "describe", "--tags")
+    }.standardOutput.asText.map { it.trim().ifEmpty { "v0.0.0" } }
+}
+// ─────────────────────
+
 
 android {
     namespace = "com.nononsenseapps.feeder"
