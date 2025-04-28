@@ -8,25 +8,16 @@ plugins {
     alias(libs.plugins.ktlint.gradle)
 }
 
-// ─── Git-Versioning, kompatibel mit Gradle-Config-Cache ───
+
+// ─── Git‐Versioning, kompatibel mit Gradle-Config-Cache ───
 val commitCountProvider = providers.exec {
     commandLine("git", "rev-list", "--count", "HEAD")
-}.standardOutput.asText.map { output ->
-    output.trim().toIntOrNull() ?: 1
-}
+}.standardOutput.asText.map { it.trim().toIntOrNull() ?: 1 }
 
 val latestTagProvider = providers.exec {
     commandLine("git", "describe", "--tags")
-}.standardOutput.asText.map { output ->
-    output.trim().ifEmpty { "v0.0.0" }
-}
+}.standardOutput.asText.map { it.trim().ifEmpty { "v0.0.0" } }
 // ──────────────────────────────────────────────────────────
-
-plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
-    // … deine weiteren Plugins …
-}
 
 android {
     namespace = "com.nononsenseapps.feeder"
@@ -34,8 +25,8 @@ android {
 
     defaultConfig {
         applicationId = "com.nononsenseapps.feeder"
-        versionCode = commitCountProvider.get()    // <<< Provider statt commitCount
-        versionName = latestTagProvider.get()      // <<< Provider statt latestTag
+        versionCode = commitCountProvider.get()
+        versionName = latestTagProvider.get()
         minSdk = 23
         targetSdk = 35
 
