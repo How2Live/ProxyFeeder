@@ -25,8 +25,8 @@ android {
 
     defaultConfig {
         applicationId = "com.nononsenseapps.feeder"
-        versionCode = commitCountProvider.get()       // ← hier Provider nutzen
-        versionName = latestTagProvider.get()         // ← hier Provider nutzen
+        versionCode = 1       // ← hier Provider nutzen
+        versionName = "2.11.1"      // ← hier Provider nutzen
         minSdk = 23
         targetSdk = 35
 
