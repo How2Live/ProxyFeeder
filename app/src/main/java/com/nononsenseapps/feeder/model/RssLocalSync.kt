@@ -1,8 +1,5 @@
 package com.nononsenseapps.feeder.model
 
-import java.net.Proxy
-import java.net.InetSocketAddress
-import java.net.Socket
 import android.app.Application
 import android.util.Log
 import com.nononsenseapps.feeder.R
@@ -55,31 +52,7 @@ class RssLocalSync(
     private val repository: Repository by instance()
     private val syncClient: SyncRestClient by instance()
     private val feedParser: FeedParser by instance()
-private val okHttpClient: OkHttpClient by lazy {
-    val proxyAddress = InetSocketAddress("127.0.0.1", 9050)
-
-    val proxy = if (isTorProxyAvailable(proxyAddress)) {
-        Proxy(Proxy.Type.SOCKS, proxyAddress)
-    } else {
-        Proxy.NO_PROXY
-    }
-
-    OkHttpClient.Builder()
-        .proxy(proxy)
-        .build()
-}
-
-private fun isTorProxyAvailable(address: InetSocketAddress): Boolean {
-    return try {
-        Socket().use { socket ->
-            socket.connect(address, 1000)
-            true
-        }
-    } catch (e: Exception) {
-        false
-    }
-}
-
+    private val okHttpClient: OkHttpClient by instance()
     private val filePathProvider: FilePathProvider by instance()
     private val application: Application by instance()
 
