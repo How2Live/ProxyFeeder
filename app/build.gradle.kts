@@ -115,7 +115,7 @@ android {
             create("play") {
                 dimension = "store"
                 versionName = "2.11.1"
-                versionCode = commitCount
+versionCode = commitCount
                 applicationIdSuffix = ".play"
             }
         }
