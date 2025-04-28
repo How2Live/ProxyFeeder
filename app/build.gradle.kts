@@ -22,22 +22,30 @@ val latestTagProvider = providers.exec {
 }
 // ──────────────────────────────────────────────────────────
 
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    // … deine weiteren Plugins …
+}
+
 android {
     namespace = "com.nononsenseapps.feeder"
     compileSdk = 35
 
     defaultConfig {
         applicationId = "com.nononsenseapps.feeder"
-        // statt commitCount / latestTag:
-        versionCode = commitCountProvider.get()
-        versionName = latestTagProvider.get()
+        versionCode = commitCountProvider.get()    // <<< Provider statt commitCount
+        versionName = latestTagProvider.get()      // <<< Provider statt latestTag
         minSdk = 23
         targetSdk = 35
-        vectorDrawables.useSupportLibrary = true
 
+        vectorDrawables.useSupportLibrary = true
         androidResources.localeFilters.addAll(getListOfSupportedLocales())
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+
+ 
+
 
 
 
