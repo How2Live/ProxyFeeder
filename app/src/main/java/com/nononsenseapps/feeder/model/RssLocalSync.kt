@@ -1,5 +1,8 @@
 package com.nononsenseapps.feeder.model
 
+import java.net.Proxy
+import java.net.InetSocketAddress
+import java.net.Socket
 import android.app.Application
 import android.util.Log
 import com.nononsenseapps.feeder.R
