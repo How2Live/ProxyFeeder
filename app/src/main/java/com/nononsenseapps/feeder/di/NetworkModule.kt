@@ -2,37 +2,33 @@ package com.nononsenseapps.feeder.di
 
 import java.net.Proxy
 import java.net.InetSocketAddress
-import com.nononsenseapps.feeder.model.FeedParser
-import com.nononsenseapps.feeder.model.FullTextParser
-import com.nononsenseapps.feeder.model.RssLocalSync
+import com.nononsenseapps.feeder.model.*
 import com.nononsenseapps.feeder.sync.SyncRestClient
-import com.nononsenseapps.jsonfeed.Feed
-import com.nononsenseapps.jsonfeed.JsonFeedParser
-import com.nononsenseapps.jsonfeed.feedAdapter
+import com.nononsenseapps.jsonfeed.*
 import com.squareup.moshi.JsonAdapter
 import okhttp3.OkHttpClient
-import org.kodein.di.DI
-import org.kodein.di.bind
-import org.kodein.di.instance
-import org.kodein.di.provider
-import org.kodein.di.singleton
+import org.kodein.di.*
 
 val networkModule = DI.Module(name = "network") {
 
-    // ─── Globaler OkHttpClient: routet alles über Tor/Orbot (localhost:9050) ───
+    // SOCKS-Proxy-Client
     bind<OkHttpClient>() with singleton {
         OkHttpClient.Builder()
             .proxy(Proxy(Proxy.Type.SOCKS, InetSocketAddress("127.0.0.1", 9050)))
             .build()
     }
-    // ───────────────────────────────────────────────────────────────────────────
 
-    // Parser können Zustand halten → provider
+    // Parser-Abhängigkeiten
     bind<JsonAdapter<Feed>>() with provider { feedAdapter() }
-    bind<JsonFeedParser>()    with provider { JsonFeedParser(instance(), instance()) }
-    bind<FeedParser>()        with provider { FeedParser(di) }
 
-    // Stateless → singleton
+    bind<JsonFeedParser>() with provider {
+        JsonFeedParser(
+            instance<OkHttpClient>(),           // ← Typ angegeben
+            instance<JsonAdapter<Feed>>()       // ← Typ angegeben
+        )
+    }
+
+    bind<FeedParser>()     with provider  { FeedParser(di) }
     bind<SyncRestClient>() with singleton { SyncRestClient(di) }
     bind<RssLocalSync>()   with singleton { RssLocalSync(di) }
     bind<FullTextParser>() with singleton { FullTextParser(di) }
