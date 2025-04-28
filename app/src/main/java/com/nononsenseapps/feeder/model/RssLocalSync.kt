@@ -56,10 +56,30 @@ class RssLocalSync(
     private val syncClient: SyncRestClient by instance()
     private val feedParser: FeedParser by instance()
 private val okHttpClient: OkHttpClient by lazy {
+    val proxyAddress = InetSocketAddress("127.0.0.1", 9050)
+
+    val proxy = if (isTorProxyAvailable(proxyAddress)) {
+        Proxy(Proxy.Type.SOCKS, proxyAddress)
+    } else {
+        Proxy.NO_PROXY
+    }
+
     OkHttpClient.Builder()
-        .proxy(Proxy(Proxy.Type.SOCKS, InetSocketAddress("127.0.0.1", 9050)))
+        .proxy(proxy)
         .build()
 }
+
+private fun isTorProxyAvailable(address: InetSocketAddress): Boolean {
+    return try {
+        Socket().use { socket ->
+            socket.connect(address, 1000)
+            true
+        }
+    } catch (e: Exception) {
+        false
+    }
+}
+
     private val filePathProvider: FilePathProvider by instance()
     private val application: Application by instance()
 
