@@ -25,8 +25,9 @@ android {
 
     defaultConfig {
         applicationId = "com.nononsenseapps.feeder"
-        versionCode = 1       // ← hier Provider nutzen
-        versionName = "2.11.1"      // ← hier Provider nutzen
+       versionCode = commitCountProvider.get()
+versionName = latestTagProvider.get()
+
         minSdk = 23
         targetSdk = 35
 
@@ -115,7 +116,7 @@ android {
             create("play") {
                 dimension = "store"
                 versionName = "2.11.1"
-versionCode = commitCount
+versionCode = commitCountProvider.get()
                 applicationIdSuffix = ".play"
             }
         }
