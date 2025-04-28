@@ -1,5 +1,7 @@
 package com.nononsenseapps.feeder.model
 
+import java.net.Proxy
+import java.net.InetSocketAddress
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
