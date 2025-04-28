@@ -28,6 +28,7 @@ android {
 
     defaultConfig {
         applicationId = "com.nononsenseapps.feeder"
+        // statt commitCount / latestTag:
         versionCode = commitCountProvider.get()
         versionName = latestTagProvider.get()
         minSdk = 23
@@ -37,6 +38,9 @@ android {
         androidResources.localeFilters.addAll(getListOfSupportedLocales())
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+
+
+
 
 
 
